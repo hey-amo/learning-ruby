@@ -53,3 +53,88 @@ Included in the first version
 - Airline reservation integrations
 - A graphical interface or website
 - Complex air traffic control or baggage handling
+
+
+----
+
+## Database design
+
+I'm using SQLite for the first version. It is a real SQL relational database, works locally on a Mac, stores everything in a single database file, and doesn't require running a separate database server.
+
+It is a good fit for a terminal application. Later, you could move to PostgreSQL if you wanted to demonstrate a client/server database.
+Proposed database tables
+I'd start with 12 core tables. That is enough to demonstrate meaningful relational design, with room to expand later.
+Core operational data
+
+Flights and aircraft
+
+flights, airlines, aircraft
+
+A flight belongs to an airline and uses an aircraft. Flights have departure and arrival airports, scheduled times, a status and a gate allocation.
+
+
+
+
+Passengers and bookings
+
+customers, bookings
+
+Customers can book multiple flights, and each flight can have multiple customers. The bookings table resolves this many-to-many relationship.
+
+
+
+
+Airport workforce
+
+staff, departments, shifts
+
+Staff belong to departments and can be assigned to different shifts. We can later add assignments linking staff to specific flights.
+
+
+
+
+Airport facilities
+
+gates, rooms
+
+Gates are used by flights; rooms can represent meeting rooms, staff rooms, training rooms or operational facilities.
+
+
+
+
+Operational history
+
+flight_events
+
+Records events such as delays, gate changes, cancellations and departures, including timestamps and descriptions.
+
+This gives us 12 tables
+
+----
+
+## Important relationships
+
+These are the relationships I'd expect you to model:
+- One airline operates many flights.
+- One aircraft can be used for many flights over time.
+- One flight has many bookings.
+- One customer can have many bookings.
+- One department employs many staff members.
+- One staff member can work many shifts, and a shift can include many staff members.
+- One gate can serve many flights over time, but not overlapping flights.
+- One flight can have many recorded events.
+The last two relationships introduce useful business rules rather than just simple data storage.
+Business use cases
+Use case	What it demonstrates
+Register a customer	Inserts, validation, unique identifiers
+Schedule a flight	Foreign keys and date/time validation
+Book a passenger	Relationships and seat capacity
+Cancel a booking	Updates and transaction handling
+Allocate a gate	Conflict detection
+Assign staff to shifts	Many-to-many relationships
+Record a flight delay	Status changes and audit history
+Find available rooms	Filtering and date/time overlap logic
+Produce a daily flight report	Joins, grouping and sorting
+Calculate flight occupancy	Aggregation and percentage calculations
+Find staff shortages	Joins and conditional aggregation
+Review cancellation rates	Grouping and business reporting
